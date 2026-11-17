@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PDF-dən test</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Display:wght@600;700&family=Noto+Sans+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <p class="eyebrow">İmtahan sualları ilə məşq</p>
+    <h1>PDF-dən test</h1>
+    <p class="lede">Sual bazasının PDF faylını seç, sual aralığını yaz (məsələn 1–50) və testi işlə. Düzgün cavablar test bitəndə göstərilir.</p>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <section id="vStart" class="panel" aria-label="PDF seçimi">
+      <div class="resume" id="resume" hidden>
+        <div class="resume-text">
+          <p class="resume-title" id="resumeTitle"></p>
+          <p class="resume-sub" id="resumeSub"></p>
+        </div>
+        <button type="button" class="primary" id="resumeGo">Davam et</button>
+      </div>
+
+      <div class="drop" id="drop">
+        <svg class="drop-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4h17l9 9v27a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4z"/><path d="M29 4v9h9"/><path d="M16 26h3m4 0h9M16 33h3m4 0h9"/><path d="M16 26l0 0M16 33l0 0"/></svg>
+        <p class="drop-title" id="dropTitle">Sual bazasının PDF faylını seç</p>
+        <p class="drop-sub" id="dropSub">Faylı bura sürüşdür və ya düyməyə bas. PDF heç yerə göndərilmir, bu brauzerin içində oxunur.</p>
+        <label class="primary file-btn" id="pickBtn">PDF seç<input type="file" id="file" accept="application/pdf,.pdf" aria-label="PDF faylı seç"></label>
+        <div class="busy" id="busy" hidden>
+          <span id="busyText">PDF oxunur…</span>
+          <div class="bar"><span id="busyBar"></span></div>
+        </div>
+        <p class="err" id="loadErr" role="alert" hidden></p>
+      </div>
+
+      <div class="card fmt">
+        <div class="sample" aria-label="Uyğun PDF nümunəsi">
+          <span class="n">24.</span><span class="stem">Sualın mətni…</span>
+          <span class="b">•</span><span class="t">səhv variant</span>
+          <span class="b ok">√</span><span class="t">düzgün variant</span>
+          <span class="b">•</span><span class="t">səhv variant</span>
+        </div>
+        <ul>
+          <li>UNEC test bazası formatındakı PDF-lər üçündür: hər sualın nömrəsi var, variantlar • ilə, düzgün cavab √ ilə işarələnib.</li>
+          <li>Düstur, sxem və qrafik olan variantlar PDF-dəki kimi şəkil şəklində göstərilir.</li>
+        </ul>
+      </div>
+
+      <div class="card" id="histCard" hidden>
+        <h3 class="sub">Son nəticələrin</h3>
+        <ul class="hist" id="hist"></ul>
+      </div>
+    </section>
+
+    <section id="vSetup" class="panel" aria-label="Test ayarları" hidden>
+      <div class="card">
+        <p class="kicker">Seçilən fayl</p>
+        <h2 class="title" id="bkTitle"></h2>
+        <p class="muted small" id="bkMeta" style="margin:0"></p>
+        <p class="warn" id="bkWarn" hidden></p>
+        <div class="row" style="margin-top:12px"><button type="button" class="chip" id="otherPdf">Başqa PDF seç</button></div>
+      </div>
+
+      <div class="card setup-grid">
+        <div>
+          <h3 class="sub">Sual aralığı</h3>
+          <div class="range">
+            <label class="field" for="rFrom">Sualdan<input id="rFrom" type="number" inputmode="numeric" min="1"></label>
+            <span class="dash">–</span>
+            <label class="field" for="rTo">Suala<input id="rTo" type="number" inputmode="numeric" min="1"></label>
+          </div>
+          <div class="quick" id="quick" role="group" aria-label="Hazır aralıqlar"></div>
+        </div>
+        <div>
+          <h3 class="sub">Sual sayı</h3>
+          <div class="row">
+            <label class="field" for="rCount">Testdə<input id="rCount" type="number" inputmode="numeric" min="1"></label>
+            <span class="muted small" id="countHint"></span>
+          </div>
+        </div>
+        <div style="display:grid;gap:8px">
+          <label class="check"><input type="checkbox" id="shQ" checked> Sualların sırasını qarışdır</label>
+          <label class="check"><input type="checkbox" id="shO" checked> Variantların yerini qarışdır</label>
+        </div>
+        <p class="err" id="setupErr" role="alert" hidden></p>
+        <div class="go-row">
+          <button type="button" class="primary" id="goBtn">Testə başla</button>
+          <div class="busy" id="prep" hidden>
+            <span id="prepText">Şəkillər hazırlanır…</span>
+            <div class="bar"><span id="prepBar"></span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="vQuiz" class="panel" aria-label="Test" hidden>
+      <div class="row"><button type="button" class="chip" id="qzBack">← Ayarlara qayıt</button><span class="muted small" id="qzTitle"></span></div>
+
+      <div class="panel qz-run" id="qzRun" hidden>
+        <div class="qz-status"><b id="qzPos"></b><span id="qzAnswered"></span><span id="qzTime"></span></div>
+        <div class="qz-track"><span id="qzBar"></span></div>
+        <div class="qz-palette" id="qzPalette" role="group" aria-label="Suallar"></div>
+        <article class="q" id="qzCard"></article>
+        <div class="qz-nav">
+          <button type="button" class="secondary" id="qzPrev">← Əvvəlki</button>
+          <button type="button" class="primary" id="qzNext">Növbəti →</button>
+        </div>
+        <div class="qz-confirm" id="qzConfirm" hidden>
+          <p id="qzConfirmText"></p>
+          <button type="button" class="primary" id="qzConfirmYes">Bəli, bitir</button>
+          <button type="button" class="secondary" id="qzConfirmNo">Cavabsızlara qayıt</button>
+        </div>
+        <div class="qz-finish-row"><button type="button" class="secondary" id="qzFinish">Testi bitir</button></div>
+        <p class="muted small keys-hint" style="margin:0;text-align:center">Klaviatura: A–E və ya 1–5 variantı seçir, ← → suallar arasında keçir.</p>
+      </div>
+
+      <div class="panel" id="qzResult" hidden>
+        <div class="card panel">
+          <p class="kicker" id="qzKind"></p>
+          <div class="qz-score"><span class="qz-big" id="qzBig"></span><span class="qz-pct" id="qzPct"></span></div>
+          <p class="qz-line" id="qzLine"></p>
+          <p class="wrong-list" id="qzWrongList"></p>
+          <div class="row">
+            <button type="button" class="primary" id="qzRetry">Səhvləri yenidən işlə</button>
+            <button type="button" class="secondary" id="qzNew">Yeni test</button>
+          </div>
+        </div>
+        <div class="qz-review-head">
+          <h3 class="sub" style="margin:0">Cavablar və düzgün variantlar</h3>
+          <button type="button" class="chip" id="qzOnlyWrong" aria-pressed="false">Yalnız səhvlər</button>
+        </div>
+        <div class="qz-review" id="qzReview"></div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>PDF faylı bu brauzerdə oxunur və heç yerə göndərilmir. Yarımçıq test və son nəticələr yalnız bu brauzerdə saxlanır.</p>
+  </div>
+</footer>
+
+<script src="parser.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
